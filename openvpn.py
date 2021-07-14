@@ -1,3 +1,4 @@
+#/usr/bin/python
 
 
 def questions():
@@ -10,7 +11,7 @@ def questions():
     IP_serveur = input("Adresse ip du serveur OpenVPN : ")
     Port_serveur = input("Port du serveur OpenVPN : ")
 
-# lecture des fichiers contenants les certificats
+# lecture des fichiers contenants les données à mettre à jour
 
     ca_crt = (open("ca.crt", "r")).read()
     client_crt = (open("client.crt", "r")).read()
@@ -18,33 +19,34 @@ def questions():
     ta_key = (open("ta.key", "r")).read()
     rsa_sign = (open("rsasign.rsa", "r")).read()
 
+# dictionnaire
+    dico = {"<serveur_vpn>" : IP_serveur, "<port_srv>" : Port_serveur, "<ca_cert>" : ca_crt, "<cert_cert>" : client_crt, "<private_key>" : client_key, "<ta_key>" : ta_key, "<rsa_sign>" : rsa_sign}
 
-# récap de la config si oui, on génère le fichier, si non on repose les questions
+# récap des informations
 
-    print("\n", Nom,"\n", Prenom, "\n", IP_serveur, "\n", Port_serveur)
+    print("\n", "Nom : " + Nom,"\n", "Prénom : " + Prenom, "\n", "Adresse IP du serveur : " + IP_serveur, "\n", "Port du serveur : " + Port_serveur, "\n")
     Correct = input("Est-ce correct ? O/N : ")
-    if Correct == "O":
-        with open("client.ovpn", "r") as fichier1, open("{}.ovpn".format(Nom+Prenom), "w") as fichier2:
+
+# si Oui, j'ouvre mon fichier
+    if Correct == "O" or "o":
+        with open("client.template", "r") as fichier1, open("{}.ovpn".format(Nom+Prenom), "w") as fichier2:
             texte = fichier1.read()
-            texte = texte.replace("<serveur_vpn>", IP_serveur)
-            texte = texte.replace("<port_srv>", Port_serveur)
-            texte = texte.replace("<ca_cert>", ca_crt)
-            texte = texte.replace("<cert_cert>", client_crt)
-            texte = texte.replace("<private_key>", client_key)
-            texte = texte.replace("<ta_key>", ta_key)
-            texte = texte.replace("<rsa_sign>", rsa_sign)
+
+# boucle pour piocher dans mon dictionnaire et remplacer mes variables
+
+            for var1 in dico:
+                texte = texte.replace(var1, dico[var1])
+
+# écriture dans mon fichier portant le nom+prénom de la personne
+
             fichier2.write(texte)
             fichier2.close
 
+# si Non, on redemande les informations
 
-            
-            
-    elif Correct == "N":
+    elif Correct == "N" or "n":
         questions()
 
     
-        
-  
-
-        
+            
 questions()
